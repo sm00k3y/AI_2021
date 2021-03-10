@@ -124,3 +124,10 @@ class Path:
 
     def print_segments(self):
         print(self.segments)
+
+
+    def length(self):
+        length = 0
+        for seg in self.segments:
+            length += seg[1]
+        return length, len(self.segments)

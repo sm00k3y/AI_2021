@@ -16,4 +16,9 @@ class Population:
     def print_population(self):
         for board in self.population:
             board.print_paths()
+            print(board.fitness)
             print("\n")
+
+    def calculate_fitness(self):
+        for board in self.population:
+            board.calculate_fitness()

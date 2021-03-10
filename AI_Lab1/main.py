@@ -8,5 +8,8 @@ if __name__ == "__main__":
     board_configuration = Config(FILE)
     
     population = Population(board_configuration)
+    
     population.init_population(POPULATION_SIZE)
+    population.calculate_fitness()
+
     population.print_population()
