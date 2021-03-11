@@ -14,10 +14,13 @@ class Population:
             self.population.append(board)
 
     def print_population(self):
+        i = 1
         for board in self.population:
+            print("========= INDIVIDUAL ", i, " ============\n")
             board.print_paths()
-            print(board.fitness)
+            print("\nFitness: ", board.fitness)
             print("\n")
+            i += 1
 
     def calculate_fitness(self):
         for board in self.population:

@@ -53,6 +53,7 @@ class Path:
         right = 1
         left = 1
 
+        # Direction pointing to the end_point will have highier probability
         if self.end[0] - self.current_position[0] > 0:
             right = HIGHIER_PROBABILITY
         elif self.end[0] - self.current_position[0] < 0:
@@ -103,6 +104,16 @@ class Path:
     
 
     def fix_vector(self, new_vector, one_line):
+        '''
+        Checks if a new vector is in the same or opposite direction of the old one
+        If so, it will modify the previous vector instead of just inserting the new one
+
+        Egxample: Previous vector: (RIGHT, 5), New Vector: (LEFT, 3)
+        After the method: Vector (RIGHT, 2)
+
+        Example: Previous vector: (RIGHT, 3), New Vector: (LEFT, 5)
+        After the method: Vector(LEFT, 2)
+        '''
         if self.segments[-1][0] == new_vector[0]:
             self.segments[-1][1] += new_vector[1]
         else:
@@ -123,7 +134,17 @@ class Path:
     
 
     def print_segments(self):
-        print(self.segments)
+        print("Path: ", end="")
+        for seg in self.segments:
+            if seg[0] == UP:
+                print("(UP, ", seg[1], "), ", end="", sep="")
+            elif seg[0] == DOWN:
+                print("(DOWN, ", seg[1], "), ", end="", sep="")
+            elif seg[0] == LEFT:
+                print("(LEFT, ", seg[1], "), ", end="", sep="")
+            else:
+                print("(RIGHT, ", seg[1], "), ", end="", sep="")
+        print()
 
 
     def length(self):

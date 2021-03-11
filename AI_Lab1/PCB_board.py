@@ -16,10 +16,6 @@ class PCB_board:
             path = Path(points[0], points[1], self.width, self.height)
             path.randomize()
             self.paths.append(path)
-    
-    def print_paths(self):
-        for path in self.paths:
-            path.print_segments()
 
     def calculate_fitness(self):
         length, sum_of_segments = self.calculate_length()
@@ -107,3 +103,8 @@ class PCB_board:
         return end[0] < 0 or end[0] > self.width \
             or end[1] < 0 or end[1] > self.height
 
+
+    def print_paths(self):
+        for path in self.paths:
+            print("Start Point: ", path.start, ", End Point: ", path.end)
+            path.print_segments()
