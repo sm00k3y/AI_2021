@@ -1,8 +1,9 @@
-from config import Config
-from population import Population
+from tools.config import Config
+from genetic_algorithm.population import Population
 import sys
+import os
 
-FILE = "zad0.txt"
+FILE = "zad1.txt"
 POPULATION_SIZE = 10
 
 if __name__ == "__main__":
@@ -16,3 +17,10 @@ if __name__ == "__main__":
     population.calculate_fitness()
 
     population.print_population()
+
+    for _ in range(10):
+        population.select_and_crossover()
+        population.mutate()
+        population.calculate_fitness()
+
+    # os.system("pause")

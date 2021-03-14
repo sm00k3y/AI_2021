@@ -1,5 +1,5 @@
-from config import Config
-from path import Path
+from tools.config import Config
+from genetic_algorithm.path import Path
 from const import INTERSECTION_PENALTY, OUT_OF_BOARD_LENGTH_PENALTY, OUT_OF_BOARD_SEGMENTS_PENALTY, \
     SUM_OF_SEGMENTS_PENALTY, UP, DOWN, LEFT, RIGHT
 from shapely.geometry import LineString
@@ -9,7 +9,7 @@ class PCB_board:
     def __init__(self, config: Config):
         self.width, self.height, self.points = config.get_board_config()
         self.paths = []
-        self.fitness = 0
+        self.fitness = -1
 
     def init_paths(self):
         for points in self.points:

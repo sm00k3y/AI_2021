@@ -1,4 +1,4 @@
-from exceptions import WrongBoardSizeFormat, WrongStartEndPointsFormat
+from tools.exceptions import WrongBoardSizeFormat, WrongStartEndPointsFormat
 
 def load_data(file_name):
         filename = "test_files\\" + file_name

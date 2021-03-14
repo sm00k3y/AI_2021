@@ -1,5 +1,6 @@
-from PCB_board import PCB_board
-from config import Config
+from genetic_algorithm.pcb_board import PCB_board
+from tools.config import Config
+from tools.exceptions import PopulationNotInitialized
 
 class Population:
 
@@ -23,5 +24,14 @@ class Population:
             i += 1
 
     def calculate_fitness(self):
+        if self.population == []:
+            raise PopulationNotInitialized
+
         for board in self.population:
             board.calculate_fitness()
+
+    def select_and_crossover(self):
+        pass
+
+    def mutate(self):
+        pass
