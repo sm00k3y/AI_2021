@@ -1,8 +1,10 @@
 from tools.config import Config
 from genetic_algorithm.path import Path
 from const import INTERSECTION_PENALTY, OUT_OF_BOARD_LENGTH_PENALTY, OUT_OF_BOARD_SEGMENTS_PENALTY, \
-    SUM_OF_SEGMENTS_PENALTY, UP, DOWN, LEFT, RIGHT
+    SUM_OF_SEGMENTS_PENALTY, UP, DOWN, LEFT, RIGHT, UNIFORM_CROSSOVER_PROBABILITY, MUTATION_PROBABILITY
 from shapely.geometry import LineString
+import random
+import copy
 
 class PCB_board:
 
@@ -10,6 +12,7 @@ class PCB_board:
         self.width, self.height, self.points = config.get_board_config()
         self.paths = []
         self.fitness = -1
+        self.roulette_weight = -1
 
     def init_paths(self):
         for points in self.points:
@@ -102,6 +105,22 @@ class PCB_board:
     def over_the_board(self, end):
         return end[0] < 0 or end[0] > self.width \
             or end[1] < 0 or end[1] > self.height
+
+
+    def crossover(self, parent1, parent2):
+        for i in range(len(parent1.paths)):
+            if UNIFORM_CROSSOVER_PROBABILITY > random.random():
+                self.paths[i] = copy.deepcopy(parent1.paths[i])
+            else:
+                self.paths[i] = copy.deepcopy(parent2.paths[i])
+
+    
+    def mutate(self):
+        # Mutate every segment in every path with probability: MUTATION_PROBABILITY
+        for path in self.paths:
+            for i in range(len(path.segments)):
+                if MUTATION_PROBABILITY > random.random():
+                    path.mutate(i)
 
 
     def print_paths(self):

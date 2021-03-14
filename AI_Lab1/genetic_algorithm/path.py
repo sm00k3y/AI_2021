@@ -1,4 +1,4 @@
-from const import UP, DOWN, LEFT, RIGHT, HIGHIER_PROBABILITY
+from const import UP, DOWN, LEFT, RIGHT, HIGHIER_PROBABILITY, MUTATION_TYPE_PROBABILITY, PATH_MOVEMENT_SIZE
 import random
 import copy
 
@@ -152,3 +152,60 @@ class Path:
         for seg in self.segments:
             length += seg[1]
         return length, len(self.segments)
+
+
+    def mutate(self, index):
+        if MUTATION_TYPE_PROBABILITY > random.random():
+            self.a_mutation(index)
+        else:
+            self.b_mutation(index)
+
+    def a_mutation(self, index):
+        seg = self.segments[index]
+        path_movement = -1 * PATH_MOVEMENT_SIZE if 0.5 > random.random() else PATH_MOVEMENT_SIZE
+        segments_to_mutate = []
+
+        # If we need to add one segment to the beggining
+        if index == 0:
+            if seg[0] == UP or seg[0] == DOWN:
+                if path_movement > 0:
+                    self.segments.insert(0, [RIGHT, path_movement])
+                else:
+                    self.segments.insert(0, [LEFT, -1 * path_movement])
+            else:
+                if path_movement > 0:
+                    self.segments.insert(0, [UP, path_movement])
+                else:
+                    self.segments.insert(0, [DOWN, -1 * path_movement])
+        else:
+            segments_to_mutate.append(self.segments[index - 1])
+        
+        # If we need to add one segment to the end
+        if index == len(self.segments) - 1:
+            if seg[0] == UP or seg[0] == DOWN:
+                if path_movement > 0:
+                    self.segments.insert(0, [LEFT, path_movement])
+                else:
+                    self.segments.insert(0, [RIGHT, -1 * path_movement])
+            else:
+                if path_movement > 0:
+                    self.segments.insert(0, [DOWN, path_movement])
+                else:
+                    self.segments.insert(0, [UP, -1 * path_movement])
+        else:
+            segments_to_mutate.append(self.segments[index + 1])
+            if len(segments_to_mutate) == 1:
+                path_movement *= -1
+
+        # Any other case of mutation
+        for s in segments_to_mutate:
+            if ((seg[0] == UP or seg[0] == DOWN) and s[0] == RIGHT) \
+                or ((seg[0] == LEFT or seg[0] == RIGHT) and s[0] == UP):
+                s[1] += path_movement
+            else:
+                s[1] -= path_movement
+            path_movement *= -1
+
+
+    def b_mutation(self, index):
+        pass

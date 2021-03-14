@@ -11,4 +11,14 @@ class WrongStartEndPointsFormat(Exception):
 
 class PopulationNotInitialized(Exception):
     def __init__(self):
-        super.__init__("Population not initialized!")
+        super().__init__("Population not initialized!")
+
+
+class CannotSelectParent(Exception):
+    def __init__(self):
+        super().__init__("Fitness not calculated or population not initialized!")
+
+
+class CannotGetChildFromCrossover(Exception):
+    def __init__(self):
+        super().__init__("Crossover failed or was not initiated!")
