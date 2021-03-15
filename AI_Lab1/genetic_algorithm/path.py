@@ -155,10 +155,11 @@ class Path:
 
 
     def mutate(self, index):
-        if MUTATION_TYPE_PROBABILITY > random.random():
-            self.a_mutation(index)
-        else:
-            self.b_mutation(index)
+        self.a_mutation(index)
+        # if MUTATION_TYPE_PROBABILITY > random.random():
+        #     self.a_mutation(index)
+        # else:
+        #     self.b_mutation(index)
 
     def a_mutation(self, index):
         seg = self.segments[index]
@@ -177,6 +178,7 @@ class Path:
                     self.segments.insert(0, [UP, path_movement])
                 else:
                     self.segments.insert(0, [DOWN, -1 * path_movement])
+            index += 1
         else:
             segments_to_mutate.append(self.segments[index - 1])
         
@@ -184,14 +186,14 @@ class Path:
         if index == len(self.segments) - 1:
             if seg[0] == UP or seg[0] == DOWN:
                 if path_movement > 0:
-                    self.segments.insert(0, [LEFT, path_movement])
+                    self.segments.append([LEFT, path_movement])
                 else:
-                    self.segments.insert(0, [RIGHT, -1 * path_movement])
+                    self.segments.append([RIGHT, -1 * path_movement])
             else:
                 if path_movement > 0:
-                    self.segments.insert(0, [DOWN, path_movement])
+                    self.segments.append([DOWN, path_movement])
                 else:
-                    self.segments.insert(0, [UP, -1 * path_movement])
+                    self.segments.append([UP, -1 * path_movement])
         else:
             segments_to_mutate.append(self.segments[index + 1])
             if len(segments_to_mutate) == 1:
@@ -209,3 +211,51 @@ class Path:
 
     def b_mutation(self, index):
         pass
+
+    def fix_segments(self):
+        i = 1
+        while i < len(self.segments):
+            curr = self.segments[i]
+            prev = self.segments[i-1]
+            one_line = prev[0] + curr[0]
+            if prev[1] == 0:
+                self.segments.remove(prev)
+            elif curr[1] == 0:
+                self.segments.remove(curr)
+            elif prev[1] < 0:
+                prev[1] = abs(prev[1])
+                if prev[0] == 0 or prev[0] == 1:
+                    prev[0] = 1 - prev[0]
+                else:
+                    prev[0] = 5 - prev[0]
+            elif curr[1] < 0:
+                curr[1] = abs(curr[1])
+                if curr[0] == 0 or curr[0] == 1:
+                    curr[0] = 1 - curr[0]
+                else:
+                    curr[0] = 5 - curr[0]
+            elif one_line == 1 or one_line == 5 or curr[0] == prev[0]:
+                if prev[0] == curr[0]:
+                    prev[1] += curr[1]
+                    self.segments.remove(curr)
+                    # NOT incrementing i here
+                else:
+                    prev[1] -= curr[1]
+                    if prev[1] == 0:
+                        self.segments.remove(prev)
+                        i -= 1
+                    elif prev[1] < 0:
+                        prev[1] = abs(prev[1])
+                        if one_line == 1:
+                            prev[0] = 1 - prev[0]
+                        else:
+                            prev[0] = 5 - prev[0]
+                        i -= 1
+                    self.segments.remove(curr)
+            else:
+                i += 1
+
+            # Finally (still in while loop)
+            if i == 0:
+                i += 1
+

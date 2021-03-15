@@ -65,7 +65,7 @@ class Population:
         parent1 = self.get_one_parent_roulette(weight_sum)
         parent2 = None
 
-        while parent2 == parent1: # we can find a better way than while loop
+        while parent2 == parent1 or parent2 == None: # we can find a better way than while loop
             parent2 = self.get_one_parent_roulette(weight_sum)
 
         if parent1 == None or parent2 == None:
@@ -91,7 +91,7 @@ class Population:
         return weight_sum
 
     def get_one_parent_roulette(self, weight_sum):
-        rand = random.randint(0, weight_sum)
+        rand = random.randint(0, weight_sum - 1)
         running_sum = 0
 
         for board in self.population:
@@ -101,3 +101,9 @@ class Population:
         
         # Shouldn't get to this place
         return None
+
+    def fix(self):
+        for b in self.population:
+            for p in b.paths:
+                p.fix_segments()
+    

@@ -110,17 +110,21 @@ class PCB_board:
     def crossover(self, parent1, parent2):
         for i in range(len(parent1.paths)):
             if UNIFORM_CROSSOVER_PROBABILITY > random.random():
-                self.paths[i] = copy.deepcopy(parent1.paths[i])
+                self.paths.append(copy.deepcopy(parent1.paths[i]))
             else:
-                self.paths[i] = copy.deepcopy(parent2.paths[i])
+                self.paths.append(copy.deepcopy(parent2.paths[i]))
 
     
     def mutate(self):
         # Mutate every segment in every path with probability: MUTATION_PROBABILITY
         for path in self.paths:
+            mutation_count = 0
             for i in range(len(path.segments)):
                 if MUTATION_PROBABILITY > random.random():
                     path.mutate(i)
+                    mutation_count += 1
+            if mutation_count > 0:
+                path.fix_segments()
 
 
     def print_paths(self):

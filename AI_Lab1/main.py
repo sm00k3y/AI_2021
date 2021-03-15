@@ -18,8 +18,12 @@ if __name__ == "__main__":
 
     population.print_population()
 
-    for _ in range(10):
+    for _ in range(50):
         population.select_and_crossover()
         population.calculate_fitness()
+
+    population.print_population()
+    # population.fix()
+    # population.print_population()
 
     # os.system("pause")
