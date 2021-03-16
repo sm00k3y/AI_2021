@@ -18,6 +18,7 @@ class PCB_board:
         for points in self.points:
             path = Path(points[0], points[1], self.width, self.height)
             path.randomize()
+            path.fix_segments()
             self.paths.append(path)
 
     def calculate_fitness(self):

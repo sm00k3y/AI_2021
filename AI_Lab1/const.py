@@ -18,6 +18,4 @@ UNIFORM_CROSSOVER_PROBABILITY = 0.5
 
 MUTATION_PROBABILITY = 0.1
 
-MUTATION_TYPE_PROBABILITY = 0.5 # Probability of type A mutation over type B
-
 PATH_MOVEMENT_SIZE = 1 # Size of movement in path mutation

@@ -1,4 +1,4 @@
-from const import UP, DOWN, LEFT, RIGHT, HIGHIER_PROBABILITY, MUTATION_TYPE_PROBABILITY, PATH_MOVEMENT_SIZE
+from const import UP, DOWN, LEFT, RIGHT, HIGHIER_PROBABILITY, PATH_MOVEMENT_SIZE
 import random
 import copy
 
@@ -20,12 +20,15 @@ class Path:
 
             self.next_position(rand_vec)
 
-            one_line = self.previous_direction + rand_vec[0]
-            if one_line == 1 or one_line == 5 or self.previous_direction == rand_vec[0]:
-                self.fix_vector(rand_vec, one_line)
-            else:
-                self.segments.append(rand_vec)
-                self.previous_direction = rand_vec[0]
+            self.segments.append(rand_vec)
+            self.previous_direction = rand_vec[0]
+
+            # one_line = self.previous_direction + rand_vec[0]
+            # if one_line == 1 or one_line == 5 or self.previous_direction == rand_vec[0]:
+            #     self.fix_vector(rand_vec, one_line)
+            # else:
+            #     self.segments.append(rand_vec)
+            #     self.previous_direction = rand_vec[0]
 
 
     def get_random_vector(self):
@@ -156,10 +159,6 @@ class Path:
 
     def mutate(self, index):
         self.a_mutation(index)
-        # if MUTATION_TYPE_PROBABILITY > random.random():
-        #     self.a_mutation(index)
-        # else:
-        #     self.b_mutation(index)
 
     def a_mutation(self, index):
         seg = self.segments[index]
@@ -208,11 +207,17 @@ class Path:
                 s[1] -= path_movement
             path_movement *= -1
 
-
-    def b_mutation(self, index):
-        pass
-
     def fix_segments(self):
+        '''
+        Checks if a new vector is in the same or opposite direction of the old one
+        If so, it will modify the previous vector instead of just inserting the new one
+
+        Egxample: Previous vector: (RIGHT, 5), New Vector: (LEFT, 3)
+        After the method: Vector (RIGHT, 2)
+
+        Example: Previous vector: (RIGHT, 3), New Vector: (LEFT, 5)
+        After the method: Vector(LEFT, 2)
+        '''
         i = 1
         while i < len(self.segments):
             curr = self.segments[i]
@@ -220,6 +225,7 @@ class Path:
             one_line = prev[0] + curr[0]
             if prev[1] == 0:
                 self.segments.remove(prev)
+                i -= 1
             elif curr[1] == 0:
                 self.segments.remove(curr)
             elif prev[1] < 0:
@@ -228,6 +234,7 @@ class Path:
                     prev[0] = 1 - prev[0]
                 else:
                     prev[0] = 5 - prev[0]
+                i -= 1
             elif curr[1] < 0:
                 curr[1] = abs(curr[1])
                 if curr[0] == 0 or curr[0] == 1:
