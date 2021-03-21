@@ -4,6 +4,9 @@ from tools.exceptions import PopulationNotInitialized, CannotSelectParent, Canno
 from const import ROULETTE_EPSILON, CROSSOVER_PROBABILITY
 import random
 import copy
+from PIL import Image
+from tools.image_generator import BoardDrawer
+
 
 class Population:
 
@@ -15,6 +18,8 @@ class Population:
         self.max_fitness = -1
         self.avg_fitness = -1
         self.min_fitness = -1
+
+        self.best_individual = None
 
     def init_population(self):
         for _ in range(self.population_size):
@@ -89,7 +94,7 @@ class Population:
         parent1 = self.get_one_parent_roulette(weight_sum)
         parent2 = None
 
-        while parent2 == parent1 or parent2 == None: # we can find a better way than while loop
+        while parent2 == parent1 or parent2 == None: # Always draw different parents
             parent2 = self.get_one_parent_roulette(weight_sum)
 
         if parent1 == None or parent2 == None:
@@ -98,6 +103,7 @@ class Population:
         return parent1, parent2
 
     def prepare_weights(self):
+        self.max_fitness = -1
         weight_sum = 0
         for board in self.population:
             if board.fitness > self.max_fitness:
@@ -128,11 +134,28 @@ class Population:
     def evaluate_population(self):
         return self.min_fitness, self.max_fitness, self.avg_fitness
 
-    # def show_best(self, generation):
-    #     json = self.create_json(generation)
+    def save_best(self, generation):
+        json = self.create_json(generation)
+        drawer = BoardDrawer(json)
+        im = drawer.get_image()
+        output_path = "best_individuals/best_from_gen_{gen}.png".format(gen = generation)
+        im.save(output_path)
 
-    # def create_json(self, generation):
-    #     json = {"board": [self.config.width, self.config.height],\
-    #         "generation": generation,\
-    #             "fitness": self.min_fitness
+    def create_json(self, generation):
+        json = {
+            "board": [self.config.width, self.config.height], \
+            "generation": generation, \
+            "fitness": self.min_fitness, \
+            "points": self.config.serialize_points(), \
+            "paths": self.get_best().serialize_paths() 
+            }
+        return json
+
+    def get_best(self):
+        best = self.population[0]
+        for board in self.population:
+            if board.fitness < best.fitness:
+                best = board
+        self.min_fitness = copy.deepcopy(best.fitness)
+        return board
     

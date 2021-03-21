@@ -23,13 +23,6 @@ class Path:
             self.segments.append(rand_vec)
             self.previous_direction = rand_vec[0]
 
-            # one_line = self.previous_direction + rand_vec[0]
-            # if one_line == 1 or one_line == 5 or self.previous_direction == rand_vec[0]:
-            #     self.fix_vector(rand_vec, one_line)
-            # else:
-            #     self.segments.append(rand_vec)
-            #     self.previous_direction = rand_vec[0]
-
 
     def get_random_vector(self):
             
@@ -106,36 +99,6 @@ class Path:
             self.current_position[0] -= vector[1]
     
 
-    def fix_vector(self, new_vector, one_line):
-        '''
-        Checks if a new vector is in the same or opposite direction of the old one
-        If so, it will modify the previous vector instead of just inserting the new one
-
-        Egxample: Previous vector: (RIGHT, 5), New Vector: (LEFT, 3)
-        After the method: Vector (RIGHT, 2)
-
-        Example: Previous vector: (RIGHT, 3), New Vector: (LEFT, 5)
-        After the method: Vector(LEFT, 2)
-        '''
-        if self.segments[-1][0] == new_vector[0]:
-            self.segments[-1][1] += new_vector[1]
-        else:
-            self.segments[-1][1] -= new_vector[1]
-            if self.segments[-1][1] == 0:
-                self.segments = self.segments[:-1]
-            elif self.segments[-1][1] < 0:
-                self.segments[-1][1] = abs(self.segments[-1][1])
-                if one_line == 1:
-                    self.segments[-1][0] = 1 - self.segments[-1][0]
-                else:
-                    self.segments[-1][0] = 5 - self.segments[-1][0]
-        
-        if self.segments == []:
-            self.previous_direction = -24
-        else:
-            self.previous_direction = self.segments[-1][0]
-    
-
     def print_segments(self):
         print("Path: ", end="")
         for seg in self.segments:
@@ -207,6 +170,7 @@ class Path:
                 s[1] -= path_movement
             path_movement *= -1
 
+
     def fix_segments(self):
         '''
         Checks if a new vector is in the same or opposite direction of the old one
@@ -266,3 +230,15 @@ class Path:
             if i == 0:
                 i += 1
 
+    
+    def serialize_singe_path(self):
+        path = []
+
+        self.current_position = copy.deepcopy(self.start)
+        path.append(copy.deepcopy(self.current_position))
+
+        for seg in self.segments:
+            self.next_position(seg)
+            path.append(copy.deepcopy(self.current_position))
+        
+        return path

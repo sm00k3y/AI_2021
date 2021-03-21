@@ -1,4 +1,7 @@
 from tools.exceptions import WrongBoardSizeFormat, WrongStartEndPointsFormat
+import os
+import shutil
+import matplotlib.pyplot as plt
 
 def load_data(file_name):
         filename = "test_files\\" + file_name
@@ -29,3 +32,22 @@ def load_data(file_name):
             i += 1
 
         return width, height, points
+
+
+def prepare_folder_for_imgs():
+    if os.path.isdir('best_individuals'):
+        shutil.rmtree('best_individuals/')
+    try:
+        os.mkdir('best_individuals')
+    except OSError:
+        print("Caanot create directory for best individuals!")
+
+
+def make_chart(best, worst, avg):
+    plt.plot(best, label='best fitness')
+    plt.plot(worst, label='worst fitness')
+    plt.plot(avg, label='average fitness')
+    plt.xlabel('Generation number')
+    plt.ylabel('Fitness value')
+    plt.legend()
+    plt.show()

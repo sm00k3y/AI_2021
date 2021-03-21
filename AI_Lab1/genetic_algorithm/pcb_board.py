@@ -127,6 +127,14 @@ class PCB_board:
             if mutation_count > 0:
                 path.fix_segments()
 
+    
+    def serialize_paths(self):
+        paths = []
+        for path in self.paths:
+            paths.append(path.serialize_singe_path())
+
+        return paths
+
 
     def print_paths(self):
         for path in self.paths:
