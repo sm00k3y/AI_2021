@@ -188,10 +188,8 @@ class Path:
             prev = self.segments[i-1]
             one_line = prev[0] + curr[0]
             if prev[1] == 0:
-                self.segments.remove(prev)
+                del self.segments[i-1]
                 i -= 1
-            elif curr[1] == 0:
-                self.segments.remove(curr)
             elif prev[1] < 0:
                 prev[1] = abs(prev[1])
                 if prev[0] == 0 or prev[0] == 1:
@@ -199,6 +197,8 @@ class Path:
                 else:
                     prev[0] = 5 - prev[0]
                 i -= 1
+            elif curr[1] == 0:
+                del self.segments[i]
             elif curr[1] < 0:
                 curr[1] = abs(curr[1])
                 if curr[0] == 0 or curr[0] == 1:
@@ -208,21 +208,20 @@ class Path:
             elif one_line == 1 or one_line == 5 or curr[0] == prev[0]:
                 if prev[0] == curr[0]:
                     prev[1] += curr[1]
-                    self.segments.remove(curr)
+                    del self.segments[i]
                     # NOT incrementing i here
                 else:
                     prev[1] -= curr[1]
+                    del self.segments[i]
                     if prev[1] == 0:
-                        self.segments.remove(prev)
-                        i -= 1
+                        del self.segments[i-1]
                     elif prev[1] < 0:
                         prev[1] = abs(prev[1])
                         if one_line == 1:
                             prev[0] = 1 - prev[0]
                         else:
                             prev[0] = 5 - prev[0]
-                        i -= 1
-                    self.segments.remove(curr)
+                    i -= 1
             else:
                 i += 1
 

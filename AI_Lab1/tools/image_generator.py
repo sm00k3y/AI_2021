@@ -11,7 +11,9 @@ SCALE = 50
 BORDER = 10
 PATH_TRANSPARENCY = 'FF'  # transparency in hexadecimal format (00..FF)
 FONT_SIZE = max(16, SCALE // 2)  # in px
-FONT = ImageFont.truetype(os.path.join(ROOT_DIR, "FreeMonoBold.ttf"), size=FONT_SIZE)
+#FONT = ImageFont.truetype(os.path.join(ROOT_DIR, "FreeMonoBold.ttf"), size=FONT_SIZE)
+FONT = ImageFont.truetype("tools/FreeMonoBold.ttf", size=FONT_SIZE)
+#FONT = ImageFont.load_default()
 
 
 COLOR_PALETTE_8 = [

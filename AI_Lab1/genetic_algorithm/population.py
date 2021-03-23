@@ -142,12 +142,13 @@ class Population:
         im.save(output_path)
 
     def create_json(self, generation):
+        best = self.get_best()
         json = {
             "board": [self.config.width, self.config.height], \
             "generation": generation, \
             "fitness": self.min_fitness, \
             "points": self.config.serialize_points(), \
-            "paths": self.get_best().serialize_paths() 
+            "paths": best.serialize_paths() 
             }
         return json
 
@@ -157,5 +158,5 @@ class Population:
             if board.fitness < best.fitness:
                 best = board
         self.min_fitness = copy.deepcopy(best.fitness)
-        return board
+        return best
     

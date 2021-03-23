@@ -2,10 +2,11 @@ from tools.config import Config
 from tools.helper import prepare_folder_for_imgs, make_chart
 from genetic_algorithm.population import Population
 import sys
+import os
 from const import CROSSOVER_PROBABILITY, MUTATION_PROBABILITY, UNIFORM_CROSSOVER_PROBABILITY
 
 FILE = "zad1.txt"
-POPULATION_SIZE = 100
+POPULATION_SIZE = 1000
 GENERATIONS = 100
 
 
@@ -44,8 +45,8 @@ def run_algorithm():
         worst_fitness.append(worst)
         avg_fitness.append(avg)
 
-    population.print_population()
-    population.save_best(50)
+    #population.print_population()
+    population.save_best(GENERATIONS)
 
     make_chart(best_fitness, worst_fitness, avg_fitness)
 
@@ -65,4 +66,4 @@ if __name__ == "__main__":
     print_params()
     run_algorithm()
 
-    # os.system("pause")
+    #os.system("pause")
