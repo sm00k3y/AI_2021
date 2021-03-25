@@ -1,7 +1,7 @@
 from genetic_algorithm.pcb_board import PCB_board
 from tools.config import Config
 from tools.exceptions import PopulationNotInitialized, CannotSelectParent, CannotGetChildFromCrossover
-from const import ROULETTE_EPSILON, CROSSOVER_PROBABILITY
+from const import ROULETTE_EPSILON, CROSSOVER_PROBABILITY, TOURNAMENT_SIZE
 import random
 import copy
 from PIL import Image
@@ -50,7 +50,8 @@ class Population:
 
         for _ in range(self.population_size - 2): # -2, becuase two best are already from previous population
             # Select parents
-            parent1, parent2 = self.select_parents_roulette()
+            #parent1, parent2 = self.select_parents_roulette()
+            parent1, parent2 = self.select_parents_tournament()
 
             # Crossover (uniform) to produce a child
             new_child = PCB_board(self.config)
@@ -88,6 +89,7 @@ class Population:
         return copy.deepcopy(first), copy.deepcopy(second)
 
 
+    # ================== ROULETTE =====================
     def select_parents_roulette(self):
         weight_sum = self.prepare_weights()
 
@@ -130,6 +132,29 @@ class Population:
         
         # Shouldn't get to this place
         return None
+
+
+    # ======================= TOURNAMENT =======================
+    def select_parents_tournament(self):
+        self.prepare_weights()  # Just to set worst fitness
+        picked_parents = []
+
+        for _ in range(0, TOURNAMENT_SIZE):
+            rand = random.randint(0, len(self.population) - 1)
+            while rand in picked_parents:
+                rand = random.randint(0, len(self.population) - 1)
+
+            picked_parents.append(rand)
+
+        sorted_parents = list(map(lambda i: self.population[i], picked_parents))
+
+        first_tmp = min(sorted_parents, key=lambda x: x.fitness)
+        first = copy.deepcopy(first_tmp)
+        sorted_parents.remove(first_tmp)
+        second = copy.deepcopy(min(sorted_parents, key=lambda x: x.fitness))
+
+        return first, second
+        
 
     def evaluate_population(self):
         return self.min_fitness, self.max_fitness, self.avg_fitness

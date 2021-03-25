@@ -4,9 +4,10 @@ from genetic_algorithm.population import Population
 import sys
 import os
 from const import CROSSOVER_PROBABILITY, MUTATION_PROBABILITY, UNIFORM_CROSSOVER_PROBABILITY
+import time
 
 FILE = "zad1.txt"
-POPULATION_SIZE = 1000
+POPULATION_SIZE = 100
 GENERATIONS = 100
 
 
@@ -24,6 +25,7 @@ def run_algorithm():
     
     population = Population(board_configuration, POPULATION_SIZE)
 
+    start = time.time()
     population.init_population()
     population.calculate_fitness()
 
@@ -47,6 +49,13 @@ def run_algorithm():
 
     #population.print_population()
     population.save_best(GENERATIONS)
+
+    stop = time.time()
+
+    print("\nTime: {}".format(stop-start))
+    print("Worst: {}".format(worst_fitness[-1]))
+    print("Best: {}".format(min(best_fitness)))
+    print("Avg: {}".format(avg_fitness[-1]))
 
     make_chart(best_fitness, worst_fitness, avg_fitness)
 

@@ -120,13 +120,11 @@ class PCB_board:
         # Mutate every segment in every path with probability: MUTATION_PROBABILITY
         for path in self.paths:
             mutation_count = 0
-            #for i in range(len(path.segments)):
             i = 0
             while i < len(path.segments):
                 if MUTATION_PROBABILITY > random.random():
                     path.mutate(i)
                     mutation_count += 1
-                    #path.fix_segments()
                 i += 1
             if mutation_count > 0:
                 path.fix_segments()
