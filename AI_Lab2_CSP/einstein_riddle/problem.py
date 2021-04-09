@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional
 from csp import CSP
 from einstein_riddle.constraints import *
+from helper.exceptions import ProblemNotInitializedException
 
 
 class EinsteinRiddleProblem:
@@ -87,7 +88,7 @@ class EinsteinRiddleProblem:
 
     def solve(self):
         if self.csp == None:
-            print("PROBLEM NOT INILIALIZED, ABORTING")  # Proper error here
+            raise ProblemNotInitializedException()
         else:
             solution: Optional[Dict[int, str]] = self.csp.backtracking_search()
             if solution is None:

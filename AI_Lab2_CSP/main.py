@@ -8,10 +8,12 @@ def run_einstein_riddle():
     problem.solve()
 
 def run_map_coloring():
-    problem = MapColoringProblem()
-    problem.init_problem(5, 16, 16)
+    problem = MapColoringProblem(5, 16, 16)
     problem.generate_map()
+    problem.init_problem(3)
+    problem.solve()
     problem.print_map()
 
 if __name__ == "__main__":
     run_map_coloring()
+    #run_einstein_riddle()
