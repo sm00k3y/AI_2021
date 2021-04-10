@@ -1,4 +1,3 @@
-
 # Return true if line segments AB and CD intersect
 def intersects(A, B, C, D):
     return ccw(A, C, D) != ccw(B, C, D) and ccw(A, B, C) != ccw(A, B, D)
@@ -8,15 +7,14 @@ def ccw(A, B, C):
     return (C[1] - A[1]) * (B[0] - A[0]) > (B[1] - A[1]) * (C[0] - A[0])
 
 
+# Returns point of intersection between two segments
 def find_intersection(p0, p1, p2, p3):
-
     s10_x = p1[0] - p0[0]
     s10_y = p1[1] - p0[1]
     s32_x = p3[0] - p2[0]
     s32_y = p3[1] - p2[1]
 
     denom = s10_x * s32_y - s32_x * s10_y
-
     if denom == 0:
         return None # collinear
 
@@ -37,7 +35,6 @@ def find_intersection(p0, p1, p2, p3):
 
     if (s_numer > denom) == denom_is_positive or (t_numer > denom) == denom_is_positive:
         return None # no collision
-
 
     # collision detected
     t = t_numer / denom

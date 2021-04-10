@@ -54,8 +54,25 @@ class MapColoringProblem:
             if solution is None:
                 print("No solution found...")
             else:
-                print(solution)
+                self.print_solution(solution)
                 self.colors = solution.values()
+
+    def print_solution(self, solution):
+        for k in solution:
+            color = ""
+            if solution[k] == 1:
+                color = "Blue"
+            elif solution[k] == 2:
+                color = "Green"
+            elif solution[k] == 3:
+                color = "Red"
+            elif solution[k] == 4:
+                color = "Yellow"
+            elif solution[k] == 5:
+                color == "Light green"
+            else:
+                color = solution[k]
+            print(f"Point: {k}, color: {color}")
                 
 
     def generate_map(self):
@@ -80,9 +97,10 @@ class MapColoringProblem:
             "board": self.width,
             "regions": copy.deepcopy(self.points),
             "colors": self.colors,
+            #"colors": [5, 5, 5, 5, 5],
             "connections": self.connections
         }
-        print(json)
+        #print(json)
 
         drawer = BoardDrawer(json)
         im = drawer.get_image()

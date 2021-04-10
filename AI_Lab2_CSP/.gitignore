@@ -2,3 +2,7 @@ test.py
 __pycache__/
 todo.txt
 .venv/
+.vscode/
+main.spec
+build/
+dist/

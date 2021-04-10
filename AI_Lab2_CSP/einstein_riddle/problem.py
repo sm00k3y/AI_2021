@@ -94,4 +94,8 @@ class EinsteinRiddleProblem:
             if solution is None:
                 print("No solution found...")
             else:
-                print(solution)
+                self.print_solution(solution)
+
+    def print_solution(self, solution: Dict[int, List[str]]):
+        for k in solution:
+            print(f"House {k}: {solution[k]}")
