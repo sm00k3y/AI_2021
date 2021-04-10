@@ -78,8 +78,8 @@ class MapColoringProblem:
     def generate_map(self):
         for i in range(self.points_number):
             while True:
-                x = randint(0, self.width)
-                y = randint(0, self.height)
+                x = randint(1, self.width - 1)
+                y = randint(1, self.height - 1)
                 if [x, y] not in self.points:
                     self.points.append([x, y])
                     break
