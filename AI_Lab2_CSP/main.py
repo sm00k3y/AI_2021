@@ -27,6 +27,6 @@ def run_map_coloring():
 if __name__ == "__main__":
     run_map_coloring()
     print()
-    run_einstein_riddle()
-    print()
+    # run_einstein_riddle()
+    # print()
     os.system("pause")

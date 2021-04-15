@@ -1,12 +1,11 @@
 from typing import Generic, TypeVar, Dict, List, Optional
 from abc import ABC, abstractmethod
 from copy import deepcopy
+from helper.default_functions import no_eval, default_val, default_var
 
 V = TypeVar('V') # variable type
 D = TypeVar('D') # domain type
 
-def no_eval(variable, assignement):
-    return True
 
 # Base class for all constraints
 class Constraint(Generic[V, D], ABC):
@@ -50,7 +49,8 @@ class CSP(Generic[V, D]):
                 return False
         return True
 
-    def backtracking_search(self, assignment: Dict[V, D] = {}, evaluate=no_eval) -> Optional[Dict[V, D]]:
+    def backtracking_search(self, assignment: Dict[V, D] = {}, evaluate=no_eval, 
+                            choose_var=default_var, sort_val=default_val) -> Optional[Dict[V, D]]:
         # assignment is complete if every variable is assigned (our base case)
         if len(assignment) == len(self.variables):
             return assignment
@@ -58,19 +58,18 @@ class CSP(Generic[V, D]):
         # get all variables in the CSP but not in the assignment
         unassigned: List[V] = [v for v in self.variables if v not in assignment]
 
-        # get the every possible domain value of the first unassigned variable
-        #sfirst: V = unassigned[0]
-        #Change here!!!
-        first: V = self.mrv(unassigned)
+        # Choosing variable with heuristic or first by default
+        first: V = choose_var(unassigned)
 
-        self.lcv(first, assignment)
+        # Sorting values with heuristic or NOT sorting by default
+        sort_val(first, assignment)
 
         for value in self.domains[first]:
             local_assignment = assignment.copy()
             local_assignment[first] = value
             # if we're still consistent, we recurse (continue)
             if self.consistent(first, local_assignment):
-                if self.mac(first, local_assignment):
+                if evaluate(first, local_assignment):
                     result: Optional[Dict[V, D]] = self.backtracking_search(local_assignment)
                     # if we didn't find the result, we will end up backtracking
                     if result is not None:
@@ -86,7 +85,7 @@ class CSP(Generic[V, D]):
 
         for constraint in self.constraints[variable]:
             for cv in constraint.variables:
-                if cv != variable:
+                if cv != variable and cv not in assignment:
                     for con_val in self.domains[cv]:
                         temp_assignment[cv] = con_val
                         if not constraint.satisfied(temp_assignment):
@@ -98,6 +97,7 @@ class CSP(Generic[V, D]):
 
         return True
 
+    # MAC - Maintaining Arc Consistency
     def mac(self, current_variable, assignment):
         queue = []
         for constraint in self.constraints[current_variable]:
@@ -150,6 +150,7 @@ class CSP(Generic[V, D]):
         del temp_assignment[y]
         return False
 
+    # MRV - Minimum Remaining Values heuristic - for choosing the variable
     def mrv(self, unassigned):
         lowest_num = len(self.domains[unassigned[0]])
         best = unassigned[0]
@@ -159,6 +160,7 @@ class CSP(Generic[V, D]):
                 lowest_num = len(self.domains[variable])
         return best
 
+    # LCV - Least Constraining Value heuristic - for choosing order of values to pick
     def lcv(self, current_variable, assignment):
         conflicts = {}
         local_assignment = assignment.copy()

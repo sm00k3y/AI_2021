@@ -50,7 +50,7 @@ class MapColoringProblem:
         if self.csp == None:
             raise ProblemNotInitializedException()
         else:
-            solution = self.csp.backtracking_search()
+            solution = self.csp.backtracking_search(evaluate=self.csp.mac, choose_var=self.csp.mrv, sort_val=self.csp.lcv)
             if solution is None:
                 print("No solution found...")
             else:
