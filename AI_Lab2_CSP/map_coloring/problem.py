@@ -34,7 +34,7 @@ class MapColoringProblem:
         for i in range(1, colors_number + 1):
             domain.append(i)
         for variable in variables:
-            domains[variable] = domain
+            domains[variable] = copy.deepcopy(domain)
         
         self.csp = CSP(variables, domains)
         self.add_constraints()
