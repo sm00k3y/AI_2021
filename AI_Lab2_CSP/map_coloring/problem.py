@@ -20,7 +20,7 @@ class MapColoringProblem:
         self.points_number = points_number
         for i in range(0, points_number):
             self.connections.append([])
-        self.colors = []
+        self.colors = {}
 
     def init_problem(self, colors_number):
         if self.points == []:
@@ -41,38 +41,55 @@ class MapColoringProblem:
 
     
     def add_constraints(self):
+        constraints = []
         for p in self.points:
             for p2_idx in self.connections[self.points.index(p)]:
                 p2 = self.points[p2_idx]
-                self.csp.add_constraint(MapColoringConstraint((p[0], p[1]), (p2[0], p2[1])))
+                if not (p, p2) in constraints and not (p2, p) in constraints:
+                    constraints.append((p, p2))
+                # self.csp.add_constraint(MapColoringConstraint((p[0], p[1]), (p2[0], p2[1])))
+        for c in constraints:
+            self.csp.add_constraint(MapColoringConstraint((c[0][0], c[0][1]), (c[1][0], c[1][1])))
 
     def solve(self):
         if self.csp == None:
             raise ProblemNotInitializedException()
         else:
-            solution = self.csp.backtracking_search(evaluate=self.csp.mac, choose_var=self.csp.mrv, sort_val=self.csp.lcv)
-            if solution is None:
+            solutions = self.csp.backtracking_search(evaluate=self.csp.forward_checking,
+                                                     only_first_result=True)
+            if solutions == []:
                 print("No solution found...")
             else:
-                self.print_solution(solution)
-                self.colors = solution.values()
+                self.print_solutions(solutions)
+                self.get_colors_from_solutions(solutions)
 
-    def print_solution(self, solution):
-        for k in solution:
-            color = ""
-            if solution[k] == 1:
-                color = "Blue"
-            elif solution[k] == 2:
-                color = "Green"
-            elif solution[k] == 3:
-                color = "Red"
-            elif solution[k] == 4:
-                color = "Yellow"
-            elif solution[k] == 5:
-                color == "Light green"
-            else:
-                color = solution[k]
-            print(f"Point: {k}, color: {color}")
+    def get_colors_from_solutions(self, solutions):
+        i = 0
+        for solution in solutions:
+            self.colors[i] = []
+            for point in self.points:
+                self.colors[i].append(solution[(point[0], point[1])])
+            i += 1
+
+    def print_solutions(self, solutions):
+        for solution in solutions:
+            for k in solution:
+                color = ""
+                if solution[k] == 1:
+                    color = "Blue"
+                elif solution[k] == 2:
+                    color = "Green"
+                elif solution[k] == 3:
+                    color = "Red"
+                elif solution[k] == 4:
+                    color = "Yellow"
+                elif solution[k] == 5:
+                    color == "Light green"
+                else:
+                    color = solution[k]
+                print(f"Point: {k}, color: {color}")
+            print()
+            print("Visited Nodes:", self.csp.visited_nodes)
                 
 
     def generate_map(self):
@@ -93,19 +110,24 @@ class MapColoringProblem:
         if self.colors == []:
             raise SolutionNotResolvedException()
 
-        json = {
-            "board": self.width,
-            "regions": copy.deepcopy(self.points),
-            "colors": self.colors,
-            #"colors": [5, 5, 5, 5, 5],
-            "connections": self.connections
-        }
-        #print(json)
+        i = 0
+        for k in self.colors.keys():
+            colors = self.colors[k]
+            print(colors)
+            json = {
+                "board": self.width,
+                "regions": copy.deepcopy(self.points),
+                "colors": colors,
+                #"colors": [5, 5, 5, 5, 5],
+                "connections": self.connections
+            }
+            #print(json)
 
-        drawer = BoardDrawer(json)
-        im = drawer.get_image()
-        output_path = "map_images/generated_map.png"
-        im.save(output_path)
+            drawer = BoardDrawer(json)
+            im = drawer.get_image()
+            output_path = f"map_images/generated_map_{i+1}.png"
+            im.save(output_path)
+            i += 1
 
     def generate_connections(self):
         done_points = []

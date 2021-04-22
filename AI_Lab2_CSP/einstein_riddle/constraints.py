@@ -3,7 +3,7 @@ from csp import Constraint
 
 class AllDifferentConstraint(Constraint):
     def __init__(self, houses):
-        super().__init__(houses)
+        super().__init__(houses, False)
         
     def satisfied(self, assignment: Dict[int, List[List[str]]]) -> bool:
         for h in assignment:
@@ -22,7 +22,7 @@ class AllDifferentConstraint(Constraint):
 # 8. Mieszkaniec srodkowego domu pija mleko
 class SingleHouseConstraint(Constraint):
     def __init__(self, house, pos, value):
-        super().__init__([house])
+        super().__init__([house], True)
         self.h = house
         self.pos = pos
         self.val = value
@@ -43,7 +43,7 @@ class SingleHouseConstraint(Constraint):
 # 15. W zielonym domu pija sie kawe
 class EveryHouseSingleConstraint(Constraint):
     def __init__(self, house, pos1, value1, pos2, value2):
-        super().__init__([house])
+        super().__init__([house], True)
         self.h = house
         self.pos1 = pos1
         self.pos2 = pos2
@@ -67,7 +67,7 @@ class EveryHouseSingleConstraint(Constraint):
 # 13. Hodowca koni mieszka obok zoltego domu
 class NeighbourHouseConstraint(Constraint):
     def __init__(self, house, self_pos, self_val, neighbour_pos, neighbour_val, all_houses):
-        super().__init__([house])
+        super().__init__(all_houses, False)
         self.h = house
         self.pos = self_pos
         self.val = self_val
@@ -76,7 +76,11 @@ class NeighbourHouseConstraint(Constraint):
         self.all_houses = all_houses
     
     def satisfied(self, assignment: Dict[int, List[List[str]]]) -> bool:
-        house = assignment[self.h]
+        house = assignment.get(self.h)
+
+        if not house:
+            return True
+
         left = assignment.get(self.h - 1)
         right = assignment.get(self.h + 1)
 
@@ -84,55 +88,80 @@ class NeighbourHouseConstraint(Constraint):
         ret2 = True
         if self.h - 1 not in self.all_houses:
             ret1 = False
+            left = None
         if self.h + 1 not in self.all_houses:
             ret2 = False
+            right = None
 
         if house[self.pos] == self.val:
             if left:
                 ret1 = (left[self.n_pos] == self.n_val)
             if right:
-                ret2 = (left[self.n_pos] == self.n_val)
+                ret2 = (right[self.n_pos] == self.n_val)
             return ret1 or ret2
         elif house[self.n_pos] == self.n_val:
             if left:
                 ret1 = (left[self.pos] == self.val)
             if right:
-                ret2 = (left[self.pos] == self.val)
+                ret2 = (right[self.pos] == self.val)
             return ret1 or ret2
 
         return True
 
 
 # 3. Zielony dom znajduje sie po lewej stronie domu bialego
+# class LeftHouseConstraint(Constraint):
+#     def __init__(self, house, pos, self_val, right_value, all_houses):
+#         super().__init__([house], True)
+#         self.house = house
+#         self.pos = pos
+#         self.val = self_val
+#         self.right_val = right_value
+#         self.all_houses = all_houses
+    
+#     def satisfied(self, assignment: Dict[int, List[List[str]]]) -> bool:
+#         house = assignment.get(self.house)
+
+#         if house[self.pos] == self.val:
+#             if self.house + 1 not in self.all_houses:
+#                 return False
+#             else:
+#                 right = assignment.get(self.house + 1)
+#                 if right:
+#                     return right[self.pos] == self.right_val
+#                 else:
+#                     return True
+#         elif house[self.pos] == self.right_val:
+#             if self.house - 1 not in self.all_houses:
+#                 return False
+#             else:
+#                 left = assignment.get(self.house - 1)
+#                 if left:
+#                     return left[self.pos] == self.val
+#                 else:
+#                     return True
+#         else:
+#             return True
+
+# 3. Zielony dom znajduje sie po lewej stronie domu bialego
 class LeftHouseConstraint(Constraint):
-    def __init__(self, house, pos, self_val, right_value, all_houses):
-        super().__init__([house])
-        self.house = house
-        self.pos = pos
-        self.val = self_val
+    def __init__(self, house_left, house_right, left_val, right_value):
+        super().__init__([house_left, house_right], False)
+        self.h_left = house_left
+        self.h_right = house_right
+        self.left_val = left_val
         self.right_val = right_value
-        self.all_houses = all_houses
     
     def satisfied(self, assignment: Dict[int, List[List[str]]]) -> bool:
-        house = assignment.get(self.house)
+        lefty = assignment.get(self.h_left)
+        righty = assignment.get(self.h_right)
 
-        if house[self.pos] == self.val:
-            if self.house + 1 not in self.all_houses:
-                return False
-            else:
-                right = assignment.get(self.house + 1)
-                if right:
-                    return right[self.pos] == self.right_val
-                else:
-                    return True
-        elif house[self.pos] == self.right_val:
-            if self.house - 1 not in self.all_houses:
-                return False
-            else:
-                left = assignment.get(self.house - 1)
-                if left:
-                    return left[self.pos] == self.val
-                else:
-                    return True
+        if not lefty or not righty:
+            return True
+
+        if lefty[0] == self.left_val:
+            return righty[0] == self.right_val
+        elif righty[0] == self.right_val:
+            return lefty[0] == self.left_val
         else:
             return True

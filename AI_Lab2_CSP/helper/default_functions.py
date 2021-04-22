@@ -5,5 +5,6 @@ def no_eval(variable, assignement):
 def default_var(unassigned):
     return unassigned[0]
 
+
 def default_val(first, assignement):
     pass

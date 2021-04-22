@@ -32,7 +32,7 @@ class EinsteinRiddleProblem:
                     for s in self.smokes:
                         for a in self.animals:
                             # IMPORTANT ORDER (c, n, d, s, a)
-                            domain.append([c, n, d, s, a])
+                            domain.append((c, n, d, s, a))
         return domain
 
     def add_constraints(self):
@@ -43,6 +43,7 @@ class EinsteinRiddleProblem:
         # 8. W srodkowym domu pije sie mleko
         self.csp.add_constraint(SingleHouseConstraint(3, 2, self.drinks[2]))
 
+        # Unary constraints
         for house in self.houses:
             # 2. Anglik mieszka w czerwonym domu
             self.csp.add_constraint(
@@ -68,10 +69,7 @@ class EinsteinRiddleProblem:
             # 15. W zielonym domu pija sie kawe
             self.csp.add_constraint(
                 EveryHouseSingleConstraint(house, 0, self.colors[3], 2, self.drinks[3]))
-            
-            # 3. Zielony dom znajduje sie po lewej stronie domu bialego
-            self.csp.add_constraint(
-                LeftHouseConstraint(house, 0, self.colors[3], self.colors[4], self.houses))
+
 
             # 5. Palacz papierosow light mieszka obok hodowcy kotow
             self.csp.add_constraint(
@@ -86,16 +84,32 @@ class EinsteinRiddleProblem:
             self.csp.add_constraint(
                 NeighbourHouseConstraint(house, 4, self.animals[1], 0, self.colors[0], self.houses))
 
+            # self.csp.add_constraint(
+            #     LeftHouseConstraint(house, 0, self.colors[3], self.colors[4], self.houses))
+            
+        # Binary constraints
+        for i in range(len(self.houses) - 1):
+            house_left = self.houses[i]
+            house_right = self.houses[i+1]
+            # 3. Zielony dom znajduje sie po lewej stronie domu bialego
+            self.csp.add_constraint(
+                LeftHouseConstraint(house_left, house_right, self.colors[3], self.colors[4]))
+
     def solve(self):
         if self.csp == None:
             raise ProblemNotInitializedException()
         else:
-            solution: Optional[Dict[int, str]] = self.csp.backtracking_search()
-            if solution is None:
+            solutions = self.csp.backtracking_search()
+            if solutions == []:
                 print("No solution found...")
             else:
-                self.print_solution(solution)
+                self.print_solutions(solutions)
 
-    def print_solution(self, solution: Dict[int, List[str]]):
-        for k in solution:
-            print(f"House {k}: {solution[k]}")
+    def print_solutions(self, solutions: List[Dict[int, List[str]]]):
+        for solution in solutions:
+            for k in sorted(solution.keys()):
+                print(f"House {k}: {solution[k]}")
+            print()
+        print("Visited Nodes:", self.csp.visited_nodes)
+        # for k in solution:
+        #     print(f"House {k}: {solution[k]}")
